@@ -725,14 +725,14 @@ ${category ? `\nCategory: ${category}` : ''}`;
 
     try {
       let apiKey = token;
-      let apiBase = 'https://api.bluesminds.com';
+      let apiBase = 'https://api.bluesminds.com/v1';
       try {
         const parsed = JSON.parse(token);
         if (parsed.key) apiKey = parsed.key;
         if (parsed.url) apiBase = parsed.url;
       } catch(e) {}
 
-      const res = await fetch(`${apiBase}/v1/chat/completions`, {
+      const res = await fetch(`${apiBase}/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
