@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - '_posts/**'
-      - 'src/**'
-  workflow_dispatch:  # allows manual "Run workflow" button in GitHub Actions UI
+      - 'index.html'
+      - '*.html'
+      - '*.css'
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,24 +21,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build static site
-        run: npm run build
-        env:
-          BLUESMINDS_API_KEY: ${{ secrets.BLUESMINDS_API_KEY }}
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
-        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          commit_message: "Deploy blog post: ${{ github.event.head_commit.message }}"
+          publish_dir: ./
+          exclude_assets: '.github,*.yml,*.yaml'
+          commit_message: "Deploy: ${{ github.event.head_commit.message }}"
