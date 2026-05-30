@@ -724,11 +724,20 @@ ${author ? `\nAuthor: ${author}` : ''}
 ${category ? `\nCategory: ${category}` : ''}`;
 
     try {
-      const res = await fetch('https://api.bluesminds.com/v1/chat/completions', {
+      let apiKey = token;
+      let apiBase = 'https://api.bluesminds.com';
+      try {
+        const parsed = JSON.parse(token);
+        if (parsed.key) apiKey = parsed.key;
+        if (parsed.url) apiBase = parsed.url;
+      } catch(e) {}
+
+      const res = await fetch(`${apiBase}/v1/chat/completions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${apiKey}`,
+          'x-api-key': apiKey
         },
         body: JSON.stringify({
           model: 'claude-sonnet-4-6',
@@ -744,7 +753,7 @@ ${category ? `\nCategory: ${category}` : ''}`;
         throw new Error(err.error?.message || `HTTP ${res.status}`);
       }
       const data = await res.json();
-      const text = data.choices?.[0]?.message?.content || '';
+      const text = data.choices?.[0]?.message?.content || data.content?.map(b=>b.text||'').join('') || '';
       document.getElementById('post-content').value = text.trim();
       updateMeta();
       switchTab('editor');
