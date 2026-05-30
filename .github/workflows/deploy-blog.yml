@@ -1,6 +1,5 @@
 name: Deploy Blog Post
 
-# UGH! This workflow fires when new post pushed to _posts folder!
 on:
   push:
     branches:
@@ -8,6 +7,7 @@ on:
     paths:
       - '_posts/**'
       - 'src/**'
+  workflow_dispatch:  # allows manual "Run workflow" button in GitHub Actions UI
 
 jobs:
   build-and-deploy:
@@ -31,7 +31,6 @@ jobs:
       - name: Build static site
         run: npm run build
         env:
-          # Store in GitHub → Settings → Secrets & Variables → Actions
           BLUESMINDS_API_KEY: ${{ secrets.BLUESMINDS_API_KEY }}
 
       - name: Deploy to GitHub Pages
